@@ -53,22 +53,18 @@
 - name: Load Debian MySQL System Facts
   set_fact:
     db_admin_user: |-
-      {%- set ns = namespace() -%}
-      {%- for line in mysql_creds.content.splitlines() -%}
-        {%- if ns.user == '' -%}
-          {%- if "user" in line -%}
-            {%- set ns.user = line | regex_replace('^\s*user\s*=\s*(.*)\s*', '\1') -%}
-          {%- endif -%}
+      {% set ns=namespace() %}
+      {%- for myline in (mysql_creds['content'] | b64decode).splitlines() -%}
+        {%- if 'user' in myline -%}
+          {%- set ns.mydata=myline | regex_replace('^user\s*=\s*','') | regex_replace('\s+$', '') -%}
         {%- endif -%}
       {%- endfor -%}
-      {{ ns.user }}
+      {{ ns.mydata | default('') }}
     db_admin_password: |-
-      {%- set ns = namespace() -%}
-      {%- for line in mysql_creds.content.splitlines() -%}
-        {%- if ns.password == '' -%}
-          {%- if "password" in line -%}
-            {%- set ns.password = line | regex_replace('^\s*password\s*=\s*(.*)\s*', '\1') -%}
-          {%- endif -%}
+      {% set ns=namespace() %}
+      {%- for myline in (mysql_creds['content'] | b64decode).splitlines() -%}
+        {%- if 'password' in myline -%}
+          {%- set ns.mydata=myline | regex_replace('^user\s*=\s*','') | regex_replace('\s+$', '') -%}
         {%- endif -%}
       {%- endfor -%}
-      {{ ns.password }}
+      {{ ns.mydata | default('') }}
