@@ -52,6 +52,7 @@
 
 - name: Load Debian MySQL System Facts
   set_fact:
+    harden_db: false
     db_admin_user: |-
       {% set ns=namespace() %}
       {%- for myline in (mysql_creds['content'] | b64decode).splitlines() -%}
