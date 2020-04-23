@@ -1,0 +1,67 @@
+---
+- name: "Create keystore folder"
+  file:
+    path: "{{ tomcat.keystore_path }}"         
+    state: directory
+
+# TODO: Consider making this use LetsEncrypt... :)
+- name: "Create keystore file"   
+  command: keytool -genkey -keystore "{{ tomcat.keystore_path }}/{{ tomcat.keystore }}" -alias "{{ tomcat.key.alias }}" -dname "{{ tomcat.key.dname }}" -storepass "{{ tomcat.key.pass }}" -keypass "{{ tomcat.key.pass }}" -keyalg "{{ tomcat.key.alg }}" -keysize "{{ tomcat.key.size }}" -validity "{{ tomcat.key.expires }}"
+  args:
+    creates: "{{ tomcat.keystore_path }}/{{ tomcat.keystore }}"
+
+- name: "server.xml upload"
+  template:
+    src: "templates/server.xml.j2"
+    dest: "/etc/{{ tomcat_ver}}/server.xml"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: "HTTP only cookies in context.xml"  
+  lineinfile:
+    dest: "/etc/{{ tomcat_ver }}/context.xml"
+    regexp: "^<Context"
+    line: "<Context useHttpOnly='true'>"
+
+- name: "Force HTTPS in web.xml"
+  blockinfile:
+    dest: "/etc/{{ tomcat_ver }}/web.xml"
+    marker: "<!-- {mark} ANSIBLE MANAGED BLOCK -->"
+    insertbefore: "</web-app>"
+    content: |
+      <!-- force HTTPS -->
+      <security-constraint> 
+        <web-resource-collection> 
+          <web-resource-name>Protected Context</web-resource-name> 
+          <url-pattern>/*</url-pattern>
+        </web-resource-collection> 
+        <user-data-constraint> 
+          <transport-guarantee>CONFIDENTIAL</transport-guarantee> 
+        </user-data-constraint> 
+      </security-constraint>
+
+- name: "remove default web dir contents ROOT"
+  file: 
+    path: "{{ tomcat_path }}/webapps/ROOT/"
+    state: absent
+
+- name: "recreate default web dir contents ROOT"
+  file: 
+    path: "{{ tomcat_path }}/webapps/ROOT/"
+    state: directory
+    mode: 0755
+
+- name: "Create redirect code to guacamole in default ROOT index.jsp"
+  lineinfile:
+    dest: "{{ tomcat_path }}/webapps/ROOT/index.jsp"
+    state: present
+    create: yes
+    regexp: "^<meta"
+    line: '<meta http-equiv="refresh" content="0;url=/guacamole/"/>'
+
+- name: "Notify TomCat to restart and wait for it to complete"
+  debug: msg="Go restart it dude..."
+  changed_when: true
+  notify:
+    - restart_tomcat

@@ -1,0 +1,31 @@
+- name: "drop demo db"
+  mysql_db:
+    name: "demo"
+    state: absent
+    # this fixes - Can't connect to local MySQL server through socket '/var/lib/mysql/mysql.sock
+    login_user: root 
+    login_password: ""
+
+- name: "ensure anonymous users are not in the database"
+  mysql_user: 
+    name: '' 
+    host: "{{ item }}" 
+    state: absent 
+    login_user: root 
+    login_password: ""
+  loop:
+    - "localhost"
+    - "{{ inventory_hostname }}"
+
+- name: "update mysql root password for all root accounts"
+  mysql_user: 
+    name: root 
+    host: "{{ item }}" 
+    password: "{{ guacamole.db.root_password }}" 
+    login_user: root 
+    login_password: ""
+  loop:
+    - "{{ ansible_hostname }}"
+    - "127.0.0.1"
+    - "::1"
+    - localhost

@@ -1,0 +1,42 @@
+---
+- name: "Get Public IP"
+  ipify_facts:
+
+- name: "Login details"
+  debug: 
+    msg:
+      - "Your Guacamole Jump Server is now live at https://{{ ipify_public_ip }}:8443/ | https://{{ dns_name }}:8443"
+      - "Access with the following details"
+      - "Username: {{ guacamole_web.admin_username }}"
+      - "Password: {{ guacamole_web.admin_password }}"
+
+- mail:
+      from: 'Provisioning of Guacamole on {{ inventory_hostname }} <root>'
+      to: '{{ mailer_group }}'
+      cc: ''
+      subject: 'Server {{ inventory_hostname }} has been provisioned with Guacamole'
+      body: |
+        We are happy to report that server {{ inventory_hostname }} was successfully provisioned.
+
+        Here are some interesting characteristics of the server:
+
+        - Public IP address: {{ ipify_public_ip }}
+
+        - Access via: https://{{ ipify_public_ip }}:8443/ or https://{{ dns_name }}:8443
+
+        Username: {{ guacamole_web.admin_username }}
+        Password: {{ guacamole_web.admin_password }}
+
+        Have fun!
+
+        Yours truly,
+
+        Ansible
+  delegate_to: 127.0.0.1
+  when: not(
+      (mailer_group is undefined)
+      or
+      (mailer_group is none)
+      or
+      (mailer_group | trim == '')
+    )
