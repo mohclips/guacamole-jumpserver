@@ -1,0 +1,45 @@
+---
+- name: Load OS specific variables
+  include_vars: ../vars/debian.yml
+  
+- name: Update server
+  apt:
+    upgrade: full
+    update_cache: yes
+  register: update
+
+- name: Install Guacamole library requirements
+  apt:
+    name:
+      - libcairo2-dev 
+      - libjpeg62-dev 
+      - libpng12-dev 
+      - libossp-uuid-dev 
+      - libfreerdp-dev 
+      - libpango1.0-dev 
+      - libssh2-1-dev 
+      - libssh-dev 
+      - tomcat7 
+      - tomcat7-admin 
+      - tomcat7-user 
+      - haveged   # fixes /dev/random issue
+      # to compile the intial code
+      - autotools-dev
+      - autoconf
+      - automake
+      - gcc
+      - make
+      # for SQL Auth
+      - mysql-server
+      - mysql-client
+      - mysql-common 
+      - mysql-utilities
+      - python-mysqldb
+    state: present
+    install_recommends: no      
+
+- name: "Start MySQL"
+  service:
+    name: mysql
+    state: started
+    enabled: yes

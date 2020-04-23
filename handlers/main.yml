@@ -1,20 +1,9 @@
-# vim: noai:ts=2:sw=2:et
 ---
 - name: "restart_tomcat"
   service:
     name: "{{ tomcat_ver }}"
     state: restarted
     enabled: true
-
-#- name: "wait_for_tomcat"
-#  uri:
-#    url: "https://{{ ansible_ssh_host }}:8443/"
-#    validate_certs: no
-#  register: result
-#  until: result['status']|default(0) == 200
-#  retries: 30
-#  delay: 3 
-
 
 - name: "restart_guacd"
   service:

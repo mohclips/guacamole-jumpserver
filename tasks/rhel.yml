@@ -1,0 +1,51 @@
+---
+- name: Load OS specific variables
+  include_vars: ../vars/rhel.yml
+  
+- name: Update server
+  yum: 
+    name: '*' 
+    state: latest
+
+- name: Add EPEL repository
+  yum_repository:
+    name: epel
+    description: EPEL YUM repo
+    baseurl: https://download.fedoraproject.org/pub/epel/$releasever/$basearch/
+
+- name: Install Guacamole library requirements
+  yum:
+    name:
+    - cairo-devel
+    - libjpeg-turbo-devel 
+    - libjpeg-devel
+    - libpng-devel
+    - uuid-devel 
+    - freerdp-devel
+    - pango-devel
+    - libssh2-devel
+    - openssl-devel
+    - tomcat
+    - tomcat-admin-webapps
+    - tomcat-webapps
+    - haveged   # fixes /dev/random issue
+    # to compile the intial code
+    - autoconf
+    - automake
+    - gcc
+    - make
+    # for SQL Auth
+    - mariadb-server
+    - mariadb
+    - MySQL-python
+    state: present
+
+- name: "Start Services"
+  service:
+    name: "{{ item }}"
+    state: restarted
+    enabled: yes
+  loop:
+  - "mariadb"
+  - "haveged"
+  - "tomcat"

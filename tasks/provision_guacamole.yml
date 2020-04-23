@@ -1,0 +1,42 @@
+---
+- name: Get list of required libs
+  find: 
+    paths: /usr/local/lib/freerdp
+  register: freerdp_libs
+
+- name: Symlink required libs
+  file:
+    src: "{{ item.path }}"
+    dest: /usr/lib/x86_64-linux-gno/freerdp/
+    state: link
+  loop: "{{ freerdp_libs }}"
+  loop_control:
+    label: "{{ item.path }}"
+
+- name: "Update Tomcat HOME for Guacamole" 
+  lineinfile:
+    dest: "{{ tomcat_cfg }}"
+    regexp: '^GUACAMOLE_HOME=.*$'
+    line: 'GUACAMOLE_HOME=/etc/guacamole'
+
+- name: "Remove Tomcat Guacamole folder"
+  file:
+    dest: "/usr/share/{{ tomcat_ver }}/.guacamole"
+    state: absent
+
+- name: Symlink Guacamole Properties
+  file:
+    src: /etc/guacamole/guacamole.properties
+    dest: "/usr/share/{{ tomcat_ver }}/.guacamole"
+    state: link
+
+- name: "Guacamole Properties upload"
+  template:
+    src: "templates/guacamole.properties.j2"
+    dest: /etc/guacamole/guacamole.properties
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart_guacd
+    - restart_tomcat

@@ -1,107 +1,19 @@
-# vim: noai:ts=2:sw=2:et
 ---
-#
-# All set as defaults so that you can override them in your plays
-#
-
-tomcat:
-  keystore_path: /etc/tomcat_keystore
-  keystore: guacamole_tomcat.jks
-  key:
-    alias: guac
-    crt_file: guac.crt
-    dname: "CN=ptsgdemo.com, OU=Fujitsu, O=PTSG, L=Stevenage, ST=Hertfordshire, C=UK"
-    pass: "t0mc4t_secr3tP4s$"
-    alg: RSA
-    size: 2048
-    expires: 730
-
-# Ubuntu defaults, overridden if CentOS/RHEL
-tomcat_ver: tomcat7
-tomcat_path: "/var/lib/{{ tomcat_ver }}"
-tomcat_cfg: /etc/default/tomcat
-
-# overridden by "mariadb" if CentOS/RHEL
-mysql_service: "mysql"
+# TomCat Certificate
+dns_name: example.com
+host_ou: IT Department
+host_org: Example.COM Inc.
+host_region: England
+host_town: London
+host_country: UK
 
 # version of Guacamole we are using - this changes regulary
-guac_ver: "0.9.11"
+guac_ver: "1.1.0"
+mysql_java_ver: "8.0.18"
 
-guacamole:
-  apt:
-    dependancies:
-      - libcairo2-dev 
-      - libjpeg62-dev 
-      - libpng12-dev 
-      - libossp-uuid-dev 
-      - libfreerdp-dev 
-      - libpango1.0-dev 
-      - libssh2-1-dev 
-      - libssh-dev 
-      - tomcat7 
-      - tomcat7-admin 
-      - tomcat7-user 
-      - haveged   # fixes /dev/random issue
-      # to compile the intial code
-      - autotools-dev
-      - autoconf
-      - automake
-      - gcc
-      - make
-      # for SQL Auth
-      - mysql-server
-      - mysql-client
-      - mysql-common 
-      - mysql-utilities
-      - python-mysqldb
-  yum:
-    dependancies:
-      - cairo-devel
-      - libjpeg-turbo-devel 
-      - libjpeg-devel
-      - libpng-devel
-      - uuid-devel 
-      - freerdp-devel
-      - pango-devel
-      - libssh2-devel
-      - openssl-devel
-      - tomcat
-      - tomcat-admin-webapps
-      - tomcat-webapps
-      - haveged   # fixes /dev/random issue
-      # to compile the intial code
-      - autoconf
-      - automake
-      - gcc
-      - make
-      # for SQL Auth
-      - mariadb-server
-      - mariadb
-      - MySQL-python
+# Target for the source code to be installed to
+guacamole_source_code_path: /opt/guacamole-installs
 
-  # guacamole
-  source_code_path: /opt/guacamole-installs
-
-  source_code: "http://mirrors.ukfast.co.uk/sites/ftp.apache.org/incubator/guacamole/{{ guac_ver }}-incubating/source/guacamole-server-{{ guac_ver }}-incubating.tar.gz"
-  client: "http://mirrors.ukfast.co.uk/sites/ftp.apache.org/incubator/guacamole/{{ guac_ver }}-incubating/binary/guacamole-{{ guac_ver }}-incubating.war"
-  auth_jdbc: "http://mirrors.ukfast.co.uk/sites/ftp.apache.org/incubator/guacamole/{{ guac_ver }}-incubating/binary/guacamole-auth-jdbc-{{ guac_ver }}-incubating.tar.gz"
-  mysql_conn: "https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.40.tar.gz  "
-
-  paths:
-    - /opt/guacamole-installs
-    - /etc/guacamole
-    - /etc/guacamole/lib
-    - /etc/guacamole/extensions
-
-  db: 
-    root_password: "Secr3tDBP4$$1077"
-    name: guacamole_db 
-    user: guacamole_user
-    user_pass: "SomeP6$$1289%%"
-
-# used by the change admin user sql template
-guacamole_web:
-  admin_username: "your_jumpserver_admin"
-  admin_password: "Spec ial Jum p%Ser ver&1989--"
-
-
+# Source of code for the Guacamole components
+guacamole_source_url: "https://www.mirrorservice.org/sites/ftp.apache.org/guacamole"
+mysql_connector_source_url: "https://cdn.mysql.com/archives"

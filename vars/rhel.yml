@@ -1,0 +1,4 @@
+---
+tomcat_ver: "tomcat"
+tomcat_cfg: /etc/sysconfig/tomcat
+mysql_service: "mariadb"

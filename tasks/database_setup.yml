@@ -1,0 +1,48 @@
+---
+- name: "drop guacamole db" # idempotent it is not, so drop again DANGEROUS
+  mysql_db:
+    state: absent
+    name: "{{ guacamole.db.name }}"
+    login_user: root
+    login_password: "{{ guacamole.db.root_password }}"
+
+- name: "create guacamole db"
+  mysql_db:
+    state: present
+    name: "{{ guacamole.db.name }}"
+    login_user: root
+    login_password: "{{ guacamole.db.root_password }}"
+
+- name: "create guacamole db user"
+  mysql_user:
+    name: "{{ guacamole.db.user }}"
+    password: "{{ guacamole.db.user_pass }}"
+    state: present
+    priv: '{{ guacamole.db.name }}.*:SELECT,INSERT,UPDATE,DELETE'
+    login_user: root
+    login_password: "{{ guacamole.db.root_password }}"
+
+- name: "create update admin password sql"
+  template:
+    src: "templates/guacamole_admin_change.sql.j2"
+    dest: "{{ guacamole.source_code_path }}/guacamole-auth-jdbc-{{ guac_ver }}/mysql/schema/999-set-admin-credential.sql"
+    owner: root
+    group: root
+    mode: 0600
+
+- name: "import mysql setup"
+  mysql_db:
+    state: import
+    name: "{{ guacamole.db.name }}"
+    target: "{{ item }}"
+    login_user: root
+    login_password: "{{ guacamole.db.root_password }}"
+  loop:
+    - "{{ guacamole.source_code_path }}/guacamole-auth-jdbc-{{ guac_ver }}/mysql/schema/001-create-schema.sql"
+    - "{{ guacamole.source_code_path }}/guacamole-auth-jdbc-{{ guac_ver }}/mysql/schema/002-create-admin-user.sql"
+    - "{{ guacamole.source_code_path }}/guacamole-auth-jdbc-{{ guac_ver }}/mysql/schema/999-set-admin-credential.sql"
+
+- name: "delete update admin sql"
+  file: 
+    state: absent
+    path: "{{ guacamole.source_code_path }}/guacamole-auth-jdbc-{{ guac_ver }}/mysql/schema/999-set-admin-credential.sql" 
