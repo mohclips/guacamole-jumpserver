@@ -8,7 +8,7 @@
   include_tasks: rhel.yml
 
 - name: Harden MySQL/MariaDB
-  when: harden_db | default(yes) | boolean
+  when: harden_db | default(true)
   include_tasks: database_hardening.yml
 
 - name: Get and install Guacamole

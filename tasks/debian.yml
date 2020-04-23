@@ -11,18 +11,18 @@
 - name: Install Guacamole library requirements
   apt:
     name:
-      - libcairo2-dev 
-      - libjpeg62-dev 
-      - libpng12-dev 
-      - libossp-uuid-dev 
-      - libfreerdp-dev 
-      - libpango1.0-dev 
-      - libssh2-1-dev 
-      - libssh-dev 
-      - tomcat7 
-      - tomcat7-admin 
-      - tomcat7-user 
-      - haveged   # fixes /dev/random issue
+      - libcairo2-dev
+      - libjpeg62-dev
+      - libpng-dev
+      - libossp-uuid-dev
+      - libfreerdp-dev
+      - libpango1.0-dev
+      - libssh2-1-dev
+      - libssh-dev
+      - tomcat9
+      - tomcat9-admin
+      - tomcat9-user
+      - haveged # fixes /dev/random issue
       # to compile the intial code
       - autotools-dev
       - autoconf
@@ -32,9 +32,10 @@
       # for SQL Auth
       - mysql-server
       - mysql-client
-      - mysql-common 
+      - mysql-common
       - mysql-utilities
-      - python-mysqldb
+      - python-pymysql
+      - python3-pymysql
     state: present
     install_recommends: no      
 
@@ -43,3 +44,31 @@
     name: mysql
     state: started
     enabled: yes
+
+- name: Get Debian MySQL System Account file
+  slurp:
+    src: /etc/mysql/debian.cnf
+  register: mysql_creds
+
+- name: Load Debian MySQL System Facts
+  set_fact:
+    db_admin_user: |-
+      {%- set ns = namespace() -%}
+      {%- for line in mysql_creds.content.splitlines() -%}
+        {%- if ns.user == '' -%}
+          {%- if "user" in line -%}
+            {%- set ns.user = line | regex_replace('^\s*user\s*=\s*(.*)\s*', '\1') -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
+      {{ ns.user }}
+    db_admin_password: |-
+      {%- set ns = namespace() -%}
+      {%- for line in mysql_creds.content.splitlines() -%}
+        {%- if ns.password == '' -%}
+          {%- if "password" in line -%}
+            {%- set ns.password = line | regex_replace('^\s*password\s*=\s*(.*)\s*', '\1') -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
+      {{ ns.password }}

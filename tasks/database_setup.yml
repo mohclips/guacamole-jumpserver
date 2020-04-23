@@ -3,14 +3,14 @@
   mysql_db:
     state: absent
     name: "{{ guacamole.db.name }}"
-    login_user: root
+    login_user: "{{ guacamole.db.root_user }}"
     login_password: "{{ guacamole.db.root_password }}"
 
 - name: "create guacamole db"
   mysql_db:
     state: present
     name: "{{ guacamole.db.name }}"
-    login_user: root
+    login_user: "{{ guacamole.db.root_user }}"
     login_password: "{{ guacamole.db.root_password }}"
 
 - name: "create guacamole db user"
@@ -19,7 +19,7 @@
     password: "{{ guacamole.db.user_pass }}"
     state: present
     priv: '{{ guacamole.db.name }}.*:SELECT,INSERT,UPDATE,DELETE'
-    login_user: root
+    login_user: "{{ guacamole.db.root_user }}"
     login_password: "{{ guacamole.db.root_password }}"
 
 - name: "create update admin password sql"
@@ -35,7 +35,7 @@
     state: import
     name: "{{ guacamole.db.name }}"
     target: "{{ item }}"
-    login_user: root
+    login_user: "{{ guacamole.db.root_user }}"
     login_password: "{{ guacamole.db.root_password }}"
   loop:
     - "{{ guacamole.source_code_path }}/guacamole-auth-jdbc-{{ guac_ver }}/mysql/schema/001-create-schema.sql"

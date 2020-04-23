@@ -28,7 +28,8 @@ guacamole:
     - /etc/guacamole/lib
     - /etc/guacamole/extensions
 
-  db: 
+  db:
+    root_user: "{{ guacamole_db_root_user | default('root') }}"
     root_password: "{{ guacamole_db_root_password | default(lookup('password', 'pw.guacdbroot chars=ascii_letters,digits length=20')) }}"
     name: "{{ guacamole_db_name | default('guacamole_db') }}" 
     user: "{{ guacamole_db_user | default('guacamole_user') }}"
