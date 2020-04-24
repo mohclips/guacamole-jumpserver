@@ -1,10 +1,10 @@
 ---
 - name: Load OS specific variables
   include_vars: ../vars/rhel.yml
-  
+
 - name: Update server
-  yum: 
-    name: '*' 
+  yum:
+    name: '*'
     state: latest
 
 - name: Add EPEL repository
@@ -17,10 +17,10 @@
   yum:
     name:
     - cairo-devel
-    - libjpeg-turbo-devel 
+    - libjpeg-turbo-devel
     - libjpeg-devel
     - libpng-devel
-    - uuid-devel 
+    - uuid-devel
     - freerdp-devel
     - pango-devel
     - libssh2-devel

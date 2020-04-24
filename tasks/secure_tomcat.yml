@@ -1,11 +1,11 @@
 ---
 - name: "Create keystore folder"
   file:
-    path: "{{ tomcat.keystore_path }}"         
+    path: "{{ tomcat.keystore_path }}"
     state: directory
 
 # TODO: Consider making this use LetsEncrypt... :)
-- name: "Create keystore file"   
+- name: "Create keystore file"
   command: keytool -genkey -keystore "{{ tomcat.keystore_path }}/{{ tomcat.keystore }}" -alias "{{ tomcat.key.alias }}" -dname "{{ tomcat.key.dname }}" -storepass "{{ tomcat.key.pass }}" -keypass "{{ tomcat.key.pass }}" -keyalg "{{ tomcat.key.alg }}" -keysize "{{ tomcat.key.size }}" -validity "{{ tomcat.key.expires }}"
   args:
     creates: "{{ tomcat.keystore_path }}/{{ tomcat.keystore }}"
@@ -13,41 +13,41 @@
 - name: "server.xml upload"
   template:
     src: "templates/server.xml.j2"
-    dest: "/etc/{{ tomcat_ver}}/server.xml"
+    dest: "/etc/{{ tomcat_name }}/server.xml"
     owner: root
     group: root
     mode: 0644
 
-- name: "HTTP only cookies in context.xml"  
+- name: "HTTP only cookies in context.xml"
   lineinfile:
-    dest: "/etc/{{ tomcat_ver }}/context.xml"
+    dest: "/etc/{{ tomcat_name }}/context.xml"
     regexp: "^<Context"
     line: "<Context useHttpOnly='true'>"
 
 - name: "Force HTTPS in web.xml"
   blockinfile:
-    dest: "/etc/{{ tomcat_ver }}/web.xml"
+    dest: "/etc/{{ tomcat_name }}/web.xml"
     marker: "<!-- {mark} ANSIBLE MANAGED BLOCK -->"
     insertbefore: "</web-app>"
     content: |
       <!-- force HTTPS -->
-      <security-constraint> 
-        <web-resource-collection> 
-          <web-resource-name>Protected Context</web-resource-name> 
+      <security-constraint>
+        <web-resource-collection>
+          <web-resource-name>Protected Context</web-resource-name>
           <url-pattern>/*</url-pattern>
-        </web-resource-collection> 
-        <user-data-constraint> 
-          <transport-guarantee>CONFIDENTIAL</transport-guarantee> 
-        </user-data-constraint> 
+        </web-resource-collection>
+        <user-data-constraint>
+          <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+        </user-data-constraint>
       </security-constraint>
 
 - name: "remove default web dir contents ROOT"
-  file: 
+  file:
     path: "{{ tomcat_path }}/webapps/ROOT/"
     state: absent
 
 - name: "recreate default web dir contents ROOT"
-  file: 
+  file:
     path: "{{ tomcat_path }}/webapps/ROOT/"
     state: directory
     mode: 0755

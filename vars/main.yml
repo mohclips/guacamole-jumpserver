@@ -1,5 +1,6 @@
 ---
-tomcat_path: "/var/lib/{{ tomcat_ver }}"
+tomcat_name: "tomcat{{ debian_tomcat_version | default('') }}"
+tomcat_path: "/var/lib/{{ tomcat_name }}"
 tomcat:
   keystore_path: /etc/tomcat_keystore
   keystore: guacamole_tomcat.jks
@@ -7,7 +8,7 @@ tomcat:
     alias: guac
     crt_file: guac.crt
     dname: "CN={{ dns_name }}, OU={{ host_ou }}, O={{ host_org }}, L={{ host_region }}, ST={{ host_town }}, C={{ host_country }}"
-    pass: "{{ tomcat_password | default(lookup('password', 'pw.tomcat chars=ascii_letters,digits length=20'))) }}"
+    pass: "{{ tomcat_password | default(lookup('password', 'pw.tomcat chars=ascii_letters,digits length=20')) }}"
     alg: RSA
     size: "{{ tomcat_certificate_size | default('2048') }}"
     expires: "{{ tomcat_certificate_expiry_days | default('730') }}"
@@ -17,10 +18,10 @@ guacamole_web:
   admin_password: "{{ guacamole_web_admin_password | default(lookup('password', 'pw.guacwebadmin chars=ascii_letters,digits length=12')) }}"
 
 guacamole:
-  source_code: "{{ guacamole_source_url }}/{{ guac_ver }}/source/guacamole-server-{{ guac_ver }}.tar.gz"
-  client: "{{ guacamole_source_url }}/{{ guac_ver }}/binary/guacamole-{{ guac_ver }}.war"
-  auth_jdbc: "{{ guacamole_source_url }}/{{ guac_ver }}/binary/guacamole-auth-jdbc-{{ guac_ver }}.tar.gz"
-  mysql_conn: "{{ mysql_connector_source_url }}/mysql-connector-java-{{ mysql_java_ver.split('.')[0] + '.' + mysql_java_ver.split('.')[1] }}/mysql-connector-java-{{ mysql_java_ver }}.tar.gz"
+  source_code: "{{ guacamole_source_url }}/{{ guacamole_version }}/source/guacamole-server-{{ guacamole_version }}.tar.gz"
+  client: "{{ guacamole_source_url }}/{{ guacamole_version }}/binary/guacamole-{{ guacamole_version }}.war"
+  auth_jdbc: "{{ guacamole_source_url }}/{{ guacamole_version }}/binary/guacamole-auth-jdbc-{{ guacamole_version }}.tar.gz"
+  mysql_conn: "{{ mysql_connector_source_url }}/mysql-connector-java-{{ mysql_java_version.split('.')[0] + '.' + mysql_java_version.split('.')[1] }}/mysql-connector-java-{{ mysql_java_version }}.tar.gz"
 
   paths:
     - "{{ guacamole_source_code_path }}"
@@ -31,6 +32,6 @@ guacamole:
   db:
     root_user: "{{ guacamole_db_root_user | default('root') }}"
     root_password: "{{ guacamole_db_root_password | default(lookup('password', 'pw.guacdbroot chars=ascii_letters,digits length=20')) }}"
-    name: "{{ guacamole_db_name | default('guacamole_db') }}" 
+    name: "{{ guacamole_db_name | default('guacamole_db') }}"
     user: "{{ guacamole_db_user | default('guacamole_user') }}"
     user_pass: "{{ guacamole_db_user_password | default(lookup('password', 'pw.guacdbuser chars=ascii_letters,digits length=20')) }}"

@@ -1,7 +1,7 @@
 ---
 - name: "restart_tomcat"
   service:
-    name: "{{ tomcat_ver }}"
+    name: "{{ tomcat_name }}"
     state: restarted
     enabled: true
 
@@ -16,5 +16,3 @@
     name: "{{ mysql_service }}"
     state: restarted
     enabled: true
-
-

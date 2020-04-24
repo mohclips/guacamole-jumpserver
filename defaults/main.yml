@@ -8,8 +8,9 @@ host_town: London
 host_country: UK
 
 # version of Guacamole we are using - this changes regulary
-guac_ver: "1.1.0"
-mysql_java_ver: "8.0.18"
+guacamole_version: "1.1.0"
+mysql_java_version: "8.0.18"
+debian_tomcat_version: 9
 
 # Target for the source code to be installed to
 guacamole_source_code_path: /opt/guacamole-installs

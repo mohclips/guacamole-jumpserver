@@ -1,0 +1,14 @@
+---
+- name: Get list of required libs
+  find:
+    paths: /usr/local/lib/freerdp
+  register: freerdp_libs
+
+- name: Symlink required libs
+  file:
+    src: "{{ item.path }}"
+    dest: /usr/lib/x86_64-linux-gnu/freerdp/
+    state: link
+  loop: "{{ freerdp_libs }}"
+  loop_control:
+    label: "{{ item.path }}"
