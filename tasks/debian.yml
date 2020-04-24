@@ -52,6 +52,7 @@
 
 - name: Load Debian MySQL System Facts
   set_fact:
+    guacamole_db_root_file: /etc/mysql/debian.cnf
     guacamole_db_root_user: |-
       {% set ns=namespace() %}
       {%- for myline in (mysql_creds['content'] | b64decode).splitlines() -%}
@@ -64,7 +65,7 @@
       {% set ns=namespace() %}
       {%- for myline in (mysql_creds['content'] | b64decode).splitlines() -%}
         {%- if 'password' in myline -%}
-          {%- set ns.mydata=myline | regex_replace('^user\s*=\s*','') | regex_replace('\s+$', '') -%}
+          {%- set ns.mydata=myline | regex_replace('^password\s*=\s*','') | regex_replace('\s+$', '') -%}
         {%- endif -%}
       {%- endfor -%}
       {{ ns.mydata | default('') }}
