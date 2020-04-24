@@ -3,6 +3,7 @@
   mysql_db:
     state: absent
     name: "{{ guacamole.db.name }}"
+    config_file: "{{ guacamole_db_root_file | default(omit) }}"
     login_user: "{{ guacamole.db.root_user }}"
     login_password: "{{ guacamole.db.root_password }}"
     login_host: localhost
@@ -11,6 +12,7 @@
   mysql_db:
     state: present
     name: "{{ guacamole.db.name }}"
+    config_file: "{{ guacamole_db_root_file | default(omit) }}"
     login_user: "{{ guacamole.db.root_user }}"
     login_password: "{{ guacamole.db.root_password }}"
     login_host: localhost
@@ -21,6 +23,7 @@
     password: "{{ guacamole.db.user_pass }}"
     state: present
     priv: '{{ guacamole.db.name }}.*:SELECT,INSERT,UPDATE,DELETE'
+    config_file: "{{ guacamole_db_root_file | default(omit) }}"
     login_user: "{{ guacamole.db.root_user }}"
     login_password: "{{ guacamole.db.root_password }}"
     login_host: localhost
@@ -38,6 +41,7 @@
     state: import
     name: "{{ guacamole.db.name }}"
     target: "{{ item }}"
+    config_file: "{{ guacamole_db_root_file | default(omit) }}"
     login_user: "{{ guacamole.db.root_user }}"
     login_password: "{{ guacamole.db.root_password }}"
     login_host: localhost
