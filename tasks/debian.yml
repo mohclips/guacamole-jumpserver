@@ -19,9 +19,9 @@
       - libpango1.0-dev
       - libssh2-1-dev
       - libssh-dev
-      - tomcat9
-      - tomcat9-admin
-      - tomcat9-user
+      - "tomcat{{ tomcat_ver }}"
+      - "tomcat{{ tomcat_ver }}-admin"
+      - "tomcat{{ tomcat_ver }}-user"
       - haveged # fixes /dev/random issue
       # to compile the intial code
       - autotools-dev
