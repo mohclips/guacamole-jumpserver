@@ -1,18 +1,4 @@
 ---
-- name: Get list of required libs
-  find:
-    paths: /usr/local/lib/freerdp
-  register: freerdp_libs
-
-- name: Symlink required libs
-  file:
-    src: "{{ item.path }}"
-    dest: /usr/lib/x86_64-linux-gno/freerdp/
-    state: link
-  loop: "{{ freerdp_libs }}"
-  loop_control:
-    label: "{{ item.path }}"
-
 - name: "Update Tomcat HOME for Guacamole"
   lineinfile:
     dest: "{{ tomcat_cfg }}"

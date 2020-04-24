@@ -19,6 +19,10 @@
 - name: Setup MySQL
   include_tasks: database_setup.yml
 
+- name: CentOS/RHEL Specific Instructions
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  include_tasks: rhel_symlink_libs.yml
+
 - name: Provision Guacamole
   include_tasks: provision_guacamole.yml
 
