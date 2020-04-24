@@ -52,8 +52,7 @@
 
 - name: Load Debian MySQL System Facts
   set_fact:
-    harden_db: false
-    db_admin_user: |-
+    guacamole_db_root_user: |-
       {% set ns=namespace() %}
       {%- for myline in (mysql_creds['content'] | b64decode).splitlines() -%}
         {%- if 'user' in myline -%}
@@ -61,7 +60,7 @@
         {%- endif -%}
       {%- endfor -%}
       {{ ns.mydata | default('') }}
-    db_admin_password: |-
+    guacamole_db_root_password: |-
       {% set ns=namespace() %}
       {%- for myline in (mysql_creds['content'] | b64decode).splitlines() -%}
         {%- if 'password' in myline -%}
