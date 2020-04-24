@@ -8,7 +8,7 @@ tomcat:
     alias: guac
     crt_file: guac.crt
     dname: "CN={{ dns_name }}, OU={{ host_ou }}, O={{ host_org }}, L={{ host_region }}, ST={{ host_town }}, C={{ host_country }}"
-    pass: "{{ tomcat_password | default(lookup('password', 'pw.tomcat chars=ascii_letters,digits length=20'))) }}"
+    pass: "{{ tomcat_password | default(lookup('password', 'pw.tomcat chars=ascii_letters,digits length=20')) }}"
     alg: RSA
     size: "{{ tomcat_certificate_size | default('2048') }}"
     expires: "{{ tomcat_certificate_expiry_days | default('730') }}"
