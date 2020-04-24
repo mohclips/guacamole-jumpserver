@@ -1,4 +1,3 @@
 ---
 tomcat_cfg: /etc/default/tomcat
 mysql_service: "mysql"
-harden_db: false
