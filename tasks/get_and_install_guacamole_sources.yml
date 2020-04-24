@@ -67,7 +67,7 @@
 
 - name: "Move jar file to /etc/guacamole/lib/"
   copy:
-    src: "{{ guacamole_source_code_path }}/mysql-connector-java-5.1.40/mysql-connector-java-5.1.40-bin.jar"
+    src: "{{ guacamole_source_code_path }}/mysql-connector-java-{{ mysql_java_version }}/mysql-connector-java-{{ mysql_java_version }}-bin.jar"
     dest: "/etc/guacamole/lib/"
   notify:
     - restart_mysql
