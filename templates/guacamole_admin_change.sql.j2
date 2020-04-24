@@ -7,4 +7,4 @@ UPDATE guacamole_entity SET name=@USERNAME WHERE entity_id=1;
 
 SET @salt = UNHEX(SHA2(UUID(), 256));
 SET @PASSWORD = "{{ guacamole_web.admin_password }}";
-UPDATE guacamole_user SET name=@USERNAME,password_salt=@SALT,password_hash=UNHEX(SHA2(CONCAT(@PASSWORD, HEX(@salt)), 256)) WHERE user_id=1;
+UPDATE guacamole_user SET password_salt=@SALT,password_hash=UNHEX(SHA2(CONCAT(@PASSWORD, HEX(@salt)), 256)) WHERE user_id=1;
