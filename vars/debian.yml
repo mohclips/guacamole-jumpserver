@@ -1,3 +1,3 @@
 ---
-tomcat_cfg: /etc/default/tomcat
+tomcat_cfg: "/etc/default/{{ tomcat_name }}"
 mysql_service: "mysql"

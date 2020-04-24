@@ -1,5 +1,5 @@
 ---
-tomcat_name: "tomcat{{ debian_tomcat_version }}"
+tomcat_name: "tomcat{{ debian_tomcat_version | default('') }}"
 tomcat_path: "/var/lib/{{ tomcat_name }}"
 tomcat:
   keystore_path: /etc/tomcat_keystore
