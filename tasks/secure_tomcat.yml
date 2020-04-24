@@ -13,20 +13,20 @@
 - name: "server.xml upload"
   template:
     src: "templates/server.xml.j2"
-    dest: "/etc/{{ tomcat_ver}}/server.xml"
+    dest: "/etc/{{ tomcat_name }}/server.xml"
     owner: root
     group: root
     mode: 0644
 
 - name: "HTTP only cookies in context.xml"
   lineinfile:
-    dest: "/etc/{{ tomcat_ver }}/context.xml"
+    dest: "/etc/{{ tomcat_name }}/context.xml"
     regexp: "^<Context"
     line: "<Context useHttpOnly='true'>"
 
 - name: "Force HTTPS in web.xml"
   blockinfile:
-    dest: "/etc/{{ tomcat_ver }}/web.xml"
+    dest: "/etc/{{ tomcat_name }}/web.xml"
     marker: "<!-- {mark} ANSIBLE MANAGED BLOCK -->"
     insertbefore: "</web-app>"
     content: |

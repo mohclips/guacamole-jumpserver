@@ -33,26 +33,26 @@
 - name: "./configure - Guacamole Server"
   command: ./configure --with-init-dir=/etc/init.d
   args:
-    chdir: "{{ guacamole_source_code_path }}/guacamole-server-{{ guac_ver }}"
+    chdir: "{{ guacamole_source_code_path }}/guacamole-server-{{ guacamole_version }}"
 
 - name: "make - Guacamole Server"
   command: make
   args:
-    chdir: "{{ guacamole_source_code_path }}/guacamole-server-{{ guac_ver }}"
+    chdir: "{{ guacamole_source_code_path }}/guacamole-server-{{ guacamole_version }}"
 
 - name: "make install - Guacamole Server"
   command: make install
   args:
-    chdir: "{{ guacamole_source_code_path }}/guacamole-server-{{ guac_ver }}"
+    chdir: "{{ guacamole_source_code_path }}/guacamole-server-{{ guacamole_version }}"
 
 - name: "ldconfig"
   command: ldconfig
   args:
-    chdir: "{{ guacamole_source_code_path }}/guacamole-server-{{ guac_ver }}"
+    chdir: "{{ guacamole_source_code_path }}/guacamole-server-{{ guacamole_version }}"
 
 - name: "Move war file to Tomcat webapps"
   copy:
-    src: "{{ guacamole_source_code_path }}/guacamole-{{ guac_ver }}.war"
+    src: "{{ guacamole_source_code_path }}/guacamole-{{ guacamole_version }}.war"
     dest: "{{ tomcat_path }}/webapps/guacamole.war"
   notify:
     - restart_tomcat
@@ -60,7 +60,7 @@
 
 - name: "Move jar file to /etc/guacamole/extensions/"
   copy:
-    src: "{{ guacamole_source_code_path }}/guacamole-auth-jdbc-{{ guac_ver }}/mysql/guacamole-auth-jdbc-mysql-{{ guac_ver }}.jar"
+    src: "{{ guacamole_source_code_path }}/guacamole-auth-jdbc-{{ guacamole_version }}/mysql/guacamole-auth-jdbc-mysql-{{ guacamole_version }}.jar"
     dest: "/etc/guacamole/extensions/"
   notify:
     - restart_mysql

@@ -1,5 +1,6 @@
 ---
-tomcat_path: "/var/lib/{{ tomcat_ver }}"
+tomcat_name: "tomcat{{ debian_tomcat_version }}"
+tomcat_path: "/var/lib/{{ tomcat_name }}"
 tomcat:
   keystore_path: /etc/tomcat_keystore
   keystore: guacamole_tomcat.jks
@@ -17,10 +18,10 @@ guacamole_web:
   admin_password: "{{ guacamole_web_admin_password | default(lookup('password', 'pw.guacwebadmin chars=ascii_letters,digits length=12')) }}"
 
 guacamole:
-  source_code: "{{ guacamole_source_url }}/{{ guac_ver }}/source/guacamole-server-{{ guac_ver }}.tar.gz"
-  client: "{{ guacamole_source_url }}/{{ guac_ver }}/binary/guacamole-{{ guac_ver }}.war"
-  auth_jdbc: "{{ guacamole_source_url }}/{{ guac_ver }}/binary/guacamole-auth-jdbc-{{ guac_ver }}.tar.gz"
-  mysql_conn: "{{ mysql_connector_source_url }}/mysql-connector-java-{{ mysql_java_ver.split('.')[0] + '.' + mysql_java_ver.split('.')[1] }}/mysql-connector-java-{{ mysql_java_ver }}.tar.gz"
+  source_code: "{{ guacamole_source_url }}/{{ guacamole_version }}/source/guacamole-server-{{ guacamole_version }}.tar.gz"
+  client: "{{ guacamole_source_url }}/{{ guacamole_version }}/binary/guacamole-{{ guacamole_version }}.war"
+  auth_jdbc: "{{ guacamole_source_url }}/{{ guacamole_version }}/binary/guacamole-auth-jdbc-{{ guacamole_version }}.tar.gz"
+  mysql_conn: "{{ mysql_connector_source_url }}/mysql-connector-java-{{ mysql_java_version.split('.')[0] + '.' + mysql_java_version.split('.')[1] }}/mysql-connector-java-{{ mysql_java_version }}.tar.gz"
 
   paths:
     - "{{ guacamole_source_code_path }}"

@@ -1,4 +1,3 @@
 ---
-tomcat_ver: "tomcat{{ tomcat_ver }}"
 tomcat_cfg: /etc/default/tomcat
 mysql_service: "mysql"
