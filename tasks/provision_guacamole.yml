@@ -10,12 +10,6 @@
     dest: "/usr/share/{{ tomcat_name }}/.guacamole"
     state: absent
 
-- name: Symlink Guacamole Properties
-  file:
-    src: /etc/guacamole/guacamole.properties
-    dest: "/usr/share/{{ tomcat_name }}/.guacamole"
-    state: link
-
 - name: "Guacamole Properties upload"
   template:
     src: "templates/guacamole.properties.j2"
@@ -26,3 +20,9 @@
   notify:
     - restart_guacd
     - restart_tomcat
+
+- name: Symlink Guacamole Properties
+  file:
+    src: /etc/guacamole/guacamole.properties
+    dest: "/usr/share/{{ tomcat_name }}/.guacamole"
+    state: link
