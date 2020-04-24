@@ -1,31 +1,31 @@
 
 - name: "Create Guacamole folders"
   file:
-    path: "{{ item }}"         
+    path: "{{ item }}"
     state: directory
     mode: 0755
   loop:
     "{{ guacamole.paths }}"
 
 - name: "Download Server source and unpack"
-  unarchive: 
+  unarchive:
     src: "{{ guacamole.source_code }}"
     dest: "{{ guacamole_source_code_path }}"
     remote_src: true
 
 - name: "Download Guacamole Client"
-  get_url: 
+  get_url:
     url: "{{ guacamole.client }}"
     dest: "{{ guacamole_source_code_path }}"
 
 - name: "Download auth_jdbc and unpack"
-  unarchive: 
+  unarchive:
     src: "{{ guacamole.auth_jdbc }}"
     dest: "{{ guacamole_source_code_path }}"
     remote_src: true
 
 - name: "Download mysql_conn java and unpack"
-  unarchive: 
+  unarchive:
     src: "{{ guacamole.mysql_conn }}"
     dest: "{{ guacamole_source_code_path }}"
     remote_src: true
@@ -33,22 +33,22 @@
 - name: "./configure - Guacamole Server"
   command: ./configure --with-init-dir=/etc/init.d
   args:
-    chdir: "{{ guacamole_source_code_path }}/guacamole-server-{{ guac_ver }}" 
+    chdir: "{{ guacamole_source_code_path }}/guacamole-server-{{ guac_ver }}"
 
 - name: "make - Guacamole Server"
   command: make
   args:
-    chdir: "{{ guacamole_source_code_path }}/guacamole-server-{{ guac_ver }}" 
+    chdir: "{{ guacamole_source_code_path }}/guacamole-server-{{ guac_ver }}"
 
 - name: "make install - Guacamole Server"
   command: make install
   args:
-    chdir: "{{ guacamole_source_code_path }}/guacamole-server-{{ guac_ver }}" 
+    chdir: "{{ guacamole_source_code_path }}/guacamole-server-{{ guac_ver }}"
 
 - name: "ldconfig"
   command: ldconfig
   args:
-    chdir: "{{ guacamole_source_code_path }}/guacamole-server-{{ guac_ver }}" 
+    chdir: "{{ guacamole_source_code_path }}/guacamole-server-{{ guac_ver }}"
 
 - name: "Move war file to Tomcat webapps"
   copy:
@@ -59,14 +59,14 @@
     - restart_guacd
 
 - name: "Move jar file to /etc/guacamole/extensions/"
-  copy: 
-    src: "{{ guacamole_source_code_path }}/guacamole-auth-jdbc-{{ guac_ver }}/mysql/guacamole-auth-jdbc-mysql-{{ guac_ver }}.jar" 
+  copy:
+    src: "{{ guacamole_source_code_path }}/guacamole-auth-jdbc-{{ guac_ver }}/mysql/guacamole-auth-jdbc-mysql-{{ guac_ver }}.jar"
     dest: "/etc/guacamole/extensions/"
   notify:
     - restart_mysql
 
 - name: "Move jar file to /etc/guacamole/lib/"
-  copy: 
+  copy:
     src: "{{ guacamole_source_code_path }}/mysql-connector-java-5.1.40/mysql-connector-java-5.1.40-bin.jar"
     dest: "/etc/guacamole/lib/"
   notify:

@@ -1,6 +1,6 @@
 ---
 - name: Get list of required libs
-  find: 
+  find:
     paths: /usr/local/lib/freerdp
   register: freerdp_libs
 
@@ -13,7 +13,7 @@
   loop_control:
     label: "{{ item.path }}"
 
-- name: "Update Tomcat HOME for Guacamole" 
+- name: "Update Tomcat HOME for Guacamole"
   lineinfile:
     dest: "{{ tomcat_cfg }}"
     regexp: '^GUACAMOLE_HOME=.*$'

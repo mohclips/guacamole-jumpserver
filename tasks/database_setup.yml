@@ -43,6 +43,6 @@
     - "{{ guacamole_source_code_path }}/guacamole-auth-jdbc-{{ guac_ver }}/mysql/schema/999-set-admin-credential.sql"
 
 - name: "delete update admin sql"
-  file: 
+  file:
     state: absent
-    path: "{{ guacamole_source_code_path }}/guacamole-auth-jdbc-{{ guac_ver }}/mysql/schema/999-set-admin-credential.sql" 
+    path: "{{ guacamole_source_code_path }}/guacamole-auth-jdbc-{{ guac_ver }}/mysql/schema/999-set-admin-credential.sql"

@@ -22,7 +22,7 @@
 
 - name: Secure Tomcat
   include_tasks: secure_tomcat.yml
-  
+
 - name: Notify completion
   include_tasks: notify.yml
 

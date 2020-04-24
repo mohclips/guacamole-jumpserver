@@ -1,7 +1,7 @@
 ---
 - name: Load OS specific variables
   include_vars: ../vars/debian.yml
-  
+
 - name: Update server
   apt:
     upgrade: full
@@ -37,7 +37,7 @@
       - python-pymysql
       - python3-pymysql
     state: present
-    install_recommends: no      
+    install_recommends: no
 
 - name: "Start MySQL"
   service:

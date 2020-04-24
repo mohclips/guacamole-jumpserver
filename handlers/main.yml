@@ -16,5 +16,3 @@
     name: "{{ mysql_service }}"
     state: restarted
     enabled: true
-
-
