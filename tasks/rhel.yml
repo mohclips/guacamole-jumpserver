@@ -37,7 +37,6 @@
     # for SQL Auth
     - mariadb-server
     - mariadb
-    - MySQL-python
     - python3-PyMySQL
     state: present
 
