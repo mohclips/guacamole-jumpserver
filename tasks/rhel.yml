@@ -8,6 +8,7 @@
     state: latest
 
 - name: Add EPEL repository
+  when: ansible_distribution == 'RedHat' or ansible_distribution == 'CentOS'
   yum_repository:
     name: epel
     description: EPEL YUM repo
