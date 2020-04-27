@@ -12,6 +12,7 @@
     src: "{{ guacamole.source_code }}"
     dest: "{{ guacamole_source_code_path }}"
     remote_src: true
+  register: guac_server
 
 - name: "Download Guacamole Client"
   get_url:
@@ -31,24 +32,28 @@
     remote_src: true
 
 - name: "./configure - Guacamole Server"
-  command: ./configure --with-init-dir=/etc/init.d
+  command: ./configure {% if ansible_service_mgr == 'systemd' %}--with-systemd-dir=/etc/systemd/system/{% elif ansible_service_mgr == 'sysvinit' %}--with-init-dir=/etc/init.d{% endif %}
   args:
     chdir: "{{ guacamole_source_code_path }}/guacamole-server-{{ guacamole_version }}"
+  when: guac_server.changed
 
 - name: "make - Guacamole Server"
   command: make
   args:
     chdir: "{{ guacamole_source_code_path }}/guacamole-server-{{ guacamole_version }}"
+  when: guac_server.changed
 
 - name: "make install - Guacamole Server"
   command: make install
   args:
     chdir: "{{ guacamole_source_code_path }}/guacamole-server-{{ guacamole_version }}"
+  when: guac_server.changed
 
 - name: "ldconfig"
   command: ldconfig
   args:
     chdir: "{{ guacamole_source_code_path }}/guacamole-server-{{ guacamole_version }}"
+  when: guac_server.changed
 
 - name: "Move war file to Tomcat webapps"
   copy:
