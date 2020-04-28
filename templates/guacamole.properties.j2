@@ -13,5 +13,24 @@ mysql-username: {{ guacamole.db.user }}
 mysql-password: {{ guacamole.db.user_pass }}
 
 # Additional settings
+{% if guacamole_connections_total is defined %}mysql-default-max-connections: {{ guacamole_connections_total }}{% endif %}
 mysql-default-max-connections-per-user: 0
 mysql-default-max-group-connections-per-user: 0
+
+# Password complexity
+mysql-user-password-min-length: {{ guacamole_password_minimum_length | default(8) }}
+mysql-user-password-require-multiple-case: {{ guacamole_password_multiple_case | default('true') }}
+mysql-user-password-require-symbol: {{ guacamole_password_symbols | default('true') }}
+mysql-user-password-require-digit: {{ guacamole_password_digits | default('true') }}
+mysql-user-password-prohibit-username: {{ guacamole_password_diff_from_username | default('true') }}
+
+{% if guacamole_password_age_min is defined or guacamole_password_age_max is defined %}
+# Password Age
+{% if guacamole_password_age_min is defined %}mysql-user-password-min-age: {{ guacamole_password_age_min }}{% endif %}
+{% if guacamole_password_age_max is defined %}mysql-user-password-max-age: {{ guacamole_password_age_max }}{% endif %}
+{% endif %}
+
+{% if guacamole_password_history is defined %}
+# Password Reuse Prevention
+{% if guacamole_password_history is defined %}mysql-user-password-history-size: {{ guacamole_password_history }}{% endif %}
+{% endif %}

@@ -7,17 +7,19 @@
   loop:
     "{{ guacamole.paths }}"
 
-- name: "Download Server source and unpack"
-  unarchive:
-    src: "{{ guacamole.source_code }}"
-    dest: "{{ guacamole_source_code_path }}"
-    remote_src: true
+- name: "Check out Guacamole Source"
+  git:
+    repo: "https://github.com/apache/guacamole-server.git"
+    dest: "{{ guacamole_source_code_path }}/guacamole-server-{{ guacamole_version }}"
+    version: "{{ guacamole_version }}"
   register: guac_server
 
-- name: "Download Guacamole Client"
-  get_url:
-    url: "{{ guacamole.client }}"
-    dest: "{{ guacamole_source_code_path }}"
+- name: "Check out Guacamole Client"
+  git:
+    repo: "https://github.com/apache/guacamole-client.git"
+    dest: "{{ guacamole_source_code_path }}/guacamole-client-{{ guacamole_version }}"
+    version: "{{ guacamole_version }}"
+  register: guac_client
 
 - name: "Download auth_jdbc and unpack"
   unarchive:
@@ -30,6 +32,12 @@
     src: "{{ guacamole.mysql_conn }}"
     dest: "{{ guacamole_source_code_path }}"
     remote_src: true
+
+- name: Create ./configure file - Guacamole Server
+  command: autoreconf --force --install
+  args:
+    chdir: "{{ guacamole_source_code_path }}/guacamole-server-{{ guacamole_version }}"
+  when: guac_server.changed
 
 - name: "./configure - Guacamole Server"
   command: ./configure {% if ansible_service_mgr == 'systemd' %}--with-systemd-dir=/etc/systemd/system/{% elif ansible_service_mgr == 'sysvinit' %}--with-init-dir=/etc/init.d{% endif %}
@@ -55,9 +63,15 @@
     chdir: "{{ guacamole_source_code_path }}/guacamole-server-{{ guacamole_version }}"
   when: guac_server.changed
 
+- name: Build package for Guacamole Client
+  command: mvn package
+  args:
+    chdir: "{{ guacamole_source_code_path }}/guacamole-client-{{ guacamole_version }}"
+  when: guac_client.changed
+
 - name: "Move war file to Tomcat webapps"
   copy:
-    src: "{{ guacamole_source_code_path }}/guacamole-{{ guacamole_version }}.war"
+    src: "{{ guacamole_source_code_path }}/guacamole-client-{{ guacamole_version }}/guacamole/target/guacamole-{{ guacamole_version }}.war"
     dest: "{{ tomcat_path }}/webapps/guacamole.war"
   notify:
     - restart_tomcat
@@ -65,7 +79,7 @@
 
 - name: "Move jar file to /etc/guacamole/extensions/"
   copy:
-    src: "{{ guacamole_source_code_path }}/guacamole-auth-jdbc-{{ guacamole_version }}/mysql/guacamole-auth-jdbc-mysql-{{ guacamole_version }}.jar"
+    src: "{{ guacamole_source_code_path }}/guacamole-client-{{ guacamole_version }}/extensions/guacamole-auth-jdbc/modules/guacamole-auth-jdbc-mysql/target/guacamole-auth-jdbc-mysql-{{ guacamole_version }}.jar"
     dest: "/etc/guacamole/extensions/"
   notify:
     - restart_mysql

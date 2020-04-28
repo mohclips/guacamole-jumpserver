@@ -13,6 +13,7 @@
     name: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm"
     state: present
 
+# Based on https://guacamole.apache.org/doc/1.1.0/gug/installing-guacamole.html
 - name: Install Guacamole library requirements
   dnf:
     name:
@@ -21,24 +22,72 @@
     - libjpeg-devel
     - libpng-devel
     - uuid-devel
-    - freerdp-devel
-    - pango-devel
-    - libssh2-devel
     - openssl-devel
     - tomcat
     - tomcat-admin-webapps
     - tomcat-webapps
-    - haveged   # fixes /dev/random issue
     # to compile the intial code
     - autoconf
+    - libtool
     - automake
     - gcc
     - make
+    - xmvn
     # for SQL Auth
     - mariadb-server
     - mariadb
     - python3-PyMySQL
     state: present
+
+- name: Install optional library components
+  when: guacamole_recordings | default(true) or guacamole_rdp | default(true) or
+        guacamole_kubernetes | default(true) or guacamole_ssh | default(true) or
+        guacamole_telnet | default(true) or guacamole_vnc | default(true) or
+        guacamole_vorbis | default(true) or guacamole_webp | default(true)
+  dnf:
+    name: |
+      [
+        {% if guacamole_recordings | default(true) %}
+          'ffmpeg-devel',
+        {% endif %}
+        {% if guacamole_rdp | default(true) %}
+          'freerdp-devel',
+        {% endif %}
+        {% if guacamole_kubernetes | default(true) or guacamole_ssh | default(true) or guacamole_telnet | default(true) %}
+          'pango-devel',
+        {% endif %}
+        {% if guacamole_ssh | default(true) %}
+          'libssh2-devel',
+        {% endif %}
+        {% if guacamole_telnet | default(true) %}
+          'libtelnet-devel',
+        {% endif %}
+        {% if guacamole_vnc | default(true) %}
+          'libvncserver-devel',
+          'pulseaudio-libs-devel',
+        {% endif %}
+        {% if guacamole_kubernetes | default(true) %}
+          'libwebsockets-devel',
+        {% endif %}
+        {% if guacamole_kubernetes | default(true) or guacamole_ssh | default(true) %}
+          'openssl-devel',
+        {% endif %}
+        {% if guacamole_vorbis | default(true) %}
+          'libvorbis-devel',
+        {% endif %}
+        {% if guacamole_webp | default(true) %}
+          'libwebp-devel',
+        {% endif %}
+      ]
+    state: present
+
+- name: Check tomcat version
+  command: rpm -q tomcat
+  register: tomcat_version_check
+
+- name: Store tomcat major version
+  set_fact:
+    tomcat_version: "{{ tomcat_version_check.stdout | regex_replace('tomcat-(\\d+).*', '\\1') }}"
 
 - name: "Start Services"
   service:

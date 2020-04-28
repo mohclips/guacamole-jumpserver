@@ -7,6 +7,12 @@
   when: ansible_os_family == 'RedHat'
   include_tasks: rhel.yml
 
+- name: Enable HAVEGED
+  when: enable_haveged | default(true)
+  package:
+    name: haveged
+    state: present
+
 - name: Harden MySQL/MariaDB
   when: 
   - harden_db | default(true)

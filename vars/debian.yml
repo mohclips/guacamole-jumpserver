@@ -1,3 +1,4 @@
 ---
 tomcat_cfg: "/etc/default/{{ tomcat_name }}"
 mysql_service: "mysql"
+tomcat_version: "{{ debian_tomcat_version }}"
