@@ -1,29 +1,57 @@
-- name: "drop demo db"
+---
+- name: Check if root password is blank
+  shell: mysqladmin -u root status
+  changed_when: false
+  failed_when: false
+  register: blank_root_pwd_check
+  tags: mariadb
+
+- name: Check if root password is blank
+  shell: "mysqladmin -u root --password='{{ guacamole.db.root_password }}' status"
+  changed_when: false
+  failed_when: false
+  register: set_root_pwd_check
+  tags: mariadb
+
+- name: Record MySQL root password
+  set_fact:
+    mysql_login_password: |-
+      {%- if set_root_pwd_check.rc == 0 -%}
+        {{ guacamole.db.root_password }}
+      {%- elif blank_root_pwd_check.rc != 0 -%}
+        SET_EXTERNALLY
+      {%- endif -%}
+
+- name: Set Status
+  when: mysql_login_password == 'SET_EXTERNALLY'
+  fail:
+    msg: "Unable to proceed - password is not known"
+
+- name: "Drop demo MySQL database"
   mysql_db:
     name: "demo"
     state: absent
-    # this fixes - Can't connect to local MySQL server through socket '/var/lib/mysql/mysql.sock
     login_user: root
-    login_password: ""
+    login_password: "{{ mysql_login_password }}"
 
-- name: "ensure anonymous users are not in the database"
+- name: Ensure anonymous users are not in the database
   mysql_user:
     name: ''
     host: "{{ item }}"
     state: absent
     login_user: root
-    login_password: ""
+    login_password: "{{ mysql_login_password }}"
   loop:
     - "localhost"
     - "{{ inventory_hostname }}"
 
-- name: "update mysql root password for all root accounts"
+- name: Update mysql root password for all root accounts
   mysql_user:
     name: root
     host: "{{ item }}"
     password: "{{ guacamole.db.root_password }}"
     login_user: root
-    login_password: ""
+    login_password: "{{ mysql_login_password }}"
   loop:
     - "{{ ansible_hostname }}"
     - "127.0.0.1"

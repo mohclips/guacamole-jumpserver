@@ -9,6 +9,6 @@
     src: "{{ item.path }}"
     dest: /usr/lib/x86_64-linux-gnu/freerdp/
     state: link
-  loop: "{{ freerdp_libs }}"
+  loop: "{{ freerdp_libs.files }}"
   loop_control:
     label: "{{ item.path }}"

@@ -15,20 +15,18 @@
       - libjpeg62-dev
       - libpng-dev
       - libossp-uuid-dev
-      - libfreerdp-dev
-      - libpango1.0-dev
-      - libssh2-1-dev
       - libssh-dev
       - "{{ tomcat_name }}"
       - "{{ tomcat_name }}-admin"
       - "{{ tomcat_name }}-user"
-      - haveged # fixes /dev/random issue
       # to compile the intial code
       - autotools-dev
+      - libtool
       - autoconf
       - automake
       - gcc
       - make
+      - maven
       # for SQL Auth
       - mysql-server
       - mysql-client
@@ -38,6 +36,48 @@
       - python3-pymysql
     state: present
     install_recommends: no
+
+- name: Install optional library components
+  when: guacamole_recordings | default(true) or guacamole_rdp | default(true) or
+        guacamole_kubernetes | default(true) or guacamole_ssh | default(true) or
+        guacamole_telnet | default(true) or guacamole_vnc | default(true) or
+        guacamole_vorbis | default(true) or guacamole_webp | default(true)
+  apt:
+    name: |
+      [
+        {% if guacamole_recordings | default(true) %}
+          'libavcodec-dev', 'libavutil-dev', 'libswscale-dev',
+        {% endif %}
+        {% if guacamole_rdp | default(true) %}
+          'libfreerdp-dev',
+        {% endif %}
+        {% if guacamole_kubernetes | default(true) or guacamole_ssh | default(true) or guacamole_telnet | default(true) %}
+          'libpango1.0-dev',
+        {% endif %}
+        {% if guacamole_ssh | default(true) %}
+          'libssh2-1-dev',
+        {% endif %}
+        {% if guacamole_telnet | default(true) %}
+          'libtelnet-dev',
+        {% endif %}
+        {% if guacamole_vnc | default(true) %}
+          'libvncserver-dev',
+          'libpulse-dev',
+        {% endif %}
+        {% if guacamole_kubernetes | default(true) %}
+          'libwebsockets-dev',
+        {% endif %}
+        {% if guacamole_kubernetes | default(true) or guacamole_ssh | default(true) %}
+          'libssl-dev',
+        {% endif %}
+        {% if guacamole_vorbis | default(true) %}
+          'libvorbis-dev',
+        {% endif %}
+        {% if guacamole_webp | default(true) %}
+          'libwebp-dev',
+        {% endif %}
+      ]
+    state: present
 
 - name: "Start MySQL"
   service:

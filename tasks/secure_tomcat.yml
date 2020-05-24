@@ -12,7 +12,7 @@
 
 - name: "server.xml upload"
   template:
-    src: "templates/server.xml.j2"
+    src: "templates/tomcat{{ tomcat_version }}-server.xml.j2"
     dest: "/etc/{{ tomcat_name }}/server.xml"
     owner: root
     group: root

@@ -1,16 +1,22 @@
 ---
 - name: Debian/Ubuntu Specific Instructions
-  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  when: ansible_os_family == 'Debian'
   include_tasks: debian.yml
 
 - name: CentOS/RHEL Specific Instructions
-  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  when: ansible_os_family == 'RedHat'
   include_tasks: rhel.yml
+
+- name: Enable HAVEGED
+  when: enable_haveged | default(true)
+  package:
+    name: haveged
+    state: present
 
 - name: Harden MySQL/MariaDB
   when: 
   - harden_db | default(true)
-  - ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  - ansible_os_family == 'RedHat'
   include_tasks: database_hardening.yml
 
 - name: Get and install Guacamole
@@ -20,7 +26,7 @@
   include_tasks: database_setup.yml
 
 - name: CentOS/RHEL Specific Instructions
-  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  when: ansible_os_family == 'RedHat'
   include_tasks: rhel_symlink_libs.yml
 
 - name: Provision Guacamole
